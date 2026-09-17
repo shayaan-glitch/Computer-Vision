@@ -1,0 +1,24 @@
+// System Architecture
+digraph {
+	rankdir=LR
+	Input [label="Input Image
+(.jpg, .png)"]
+	subgraph cluster_processing {
+		label="Processing Pipeline"
+		Pre [label="Preprocessing
+(Grayscale, Blur)"]
+		Seg [label="Segmentation
+(Otsu, Morphology)"]
+		Feat [label="Feature Extraction
+(Geom, Hu Moments)"]
+		Class [label="Classification
+(KNN)"]
+		Pre -> Seg
+		Seg -> Feat
+		Feat -> Class
+	}
+	Output [label="Output
+(Prediction, Visuals)"]
+	Input -> Pre
+	Class -> Output
+}

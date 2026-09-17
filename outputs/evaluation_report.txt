@@ -1,0 +1,21 @@
+=== Evaluation Report ===
+Accuracy: 0.6111
+
+Class Metrics:
+- circle:
+  Precision: 0.6176
+  Recall: 0.6562
+  F1-Score: 0.6364
+- square:
+  Precision: 0.4333
+  Recall: 0.4815
+  F1-Score: 0.4561
+- triangle:
+  Precision: 0.8077
+  Recall: 0.6774
+  F1-Score: 0.7368
+
+Confusion Matrix:
+[[21  8  3]
+ [12 13  2]
+ [ 1  9 21]]
