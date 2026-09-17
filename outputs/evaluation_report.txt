@@ -1,21 +1,21 @@
 === Evaluation Report ===
-Accuracy: 0.6111
+Accuracy: 0.6000
 
 Class Metrics:
 - circle:
-  Precision: 0.6176
-  Recall: 0.6562
-  F1-Score: 0.6364
+  Precision: 0.6000
+  Recall: 0.4884
+  F1-Score: 0.5385
 - square:
-  Precision: 0.4333
-  Recall: 0.4815
-  F1-Score: 0.4561
+  Precision: 0.4865
+  Recall: 0.5000
+  F1-Score: 0.4932
 - triangle:
-  Precision: 0.8077
-  Recall: 0.6774
-  F1-Score: 0.7368
+  Precision: 0.7105
+  Recall: 0.8710
+  F1-Score: 0.7826
 
 Confusion Matrix:
-[[21  8  3]
- [12 13  2]
- [ 1  9 21]]
+[[21 16  6]
+ [13 18  5]
+ [ 1  3 27]]

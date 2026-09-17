@@ -1,54 +1,62 @@
 # Image Analysis and Object Classification Using Classical Computer Vision
 **VITyarthi - Student Project Report**
 
+## 1. Cover Page
+(This section is represented by the report title above).
+
 ## 2. Introduction
-This project implements a classical Computer Vision pipeline to identify and classify geometric shapes (circles, squares, triangles). It avoids deep learning wrappers to emphasize fundamental image processing techniques like filtering, thresholding, and morphological operations.
+This project is a Computer Vision pipeline that identifies and classifies geometric shapes (circles, squares, triangles) from noisy images. It uses OpenCV to process the images and extract numerical features, which are then passed to a classifier.
 
 ## 3. Problem Statement
-The goal is to develop a system capable of identifying geometric shapes from noisy images using classical CV techniques, demonstrating the application of feature extraction and classical machine learning (KNN) in a modular pipeline.
+The goal of this project is to build a system that can identify shapes using classical computer vision techniques rather than deep learning. It demonstrates how image filtering, contour extraction, and geometric feature calculation can be combined with a K-Nearest Neighbors (KNN) classifier.
 
 ## 4. Functional Requirements
-- Generate a synthetic dataset of shapes with noise.
-- Process images using grayscale conversion and Gaussian filtering.
+- Generate a dataset of 600 synthetic shape images.
+- Process images using grayscale conversion and Gaussian blur.
 - Segment shapes using Otsu's thresholding.
-- Extract 13 geometric features.
-- Classify shapes using a custom K-Nearest Neighbors classifier.
-- Provide a CLI interface for training and testing.
+- Extract 13 numerical shape features.
+- Classify shapes using a K=5 KNN algorithm.
+- Provide a command-line interface for training and testing.
 
 ## 5. Non-functional Requirements
-- Performance: Processing pipeline must execute rapidly on CPU.
-- Maintainability: Code must be modular and well-structured.
-- Reliability: Handling varied noise gracefully during segmentation.
-- Usability: Simple and intuitive command-line interface.
+- Performance: The system should run on a standard CPU without requiring GPU acceleration.
+- Maintainability: The code is split into distinct modules for preprocessing, feature extraction, and classification.
+- Reproducibility: The dataset is generated locally via a script so anyone can reproduce the environment.
+- Usability: The terminal interface uses clear arguments for all operations.
 
 ## 6. System Architecture & 7. Design Diagrams
-The system consists of Preprocessing, Segmentation, Feature Extraction, and Classification modules. Please see the generated diagrams in the `docs/images/` directory.
+The pipeline consists of Preprocessing, Segmentation, Feature Extraction, and Classification modules. Please see the generated diagrams in the `docs/images/` directory.
 
 ## 8. Design Decisions & Rationale
-A synthetic dataset was used to ensure reproducibility and guarantee that the classical techniques (noise removal, thresholding) are explicitly required to achieve good performance. A custom KNN classifier was implemented because external ML libraries like scikit-learn were unavailable on the target 32-bit Python environment. 13 features (geometric + Hu Moments) were selected to provide scale and rotation invariance.
+A synthetic dataset was used because it guarantees that the images will test the specific noise removal and thresholding logic written for this project. A custom KNN classifier was implemented using NumPy so that the classification step could be kept simple and directly show how distance-based classification works. The 13 selected features include Hu Moments to help account for the random rotation of the shapes.
 
 ## 9. Implementation Details
-OpenCV was heavily utilized for image operations. Images are converted to grayscale and blurred. Otsu's thresholding is used to separate shapes from the background, followed by morphological closing and opening. Contours are found, and features like Circularity, Aspect Ratio, Extent, Solidity, and 7 Hu Moments are computed. These 13 features form the input to a custom K=5 KNN algorithm utilizing Euclidean distance.
+The pipeline executes in this order:
+1. Image Loading: The image is loaded via OpenCV.
+2. Grayscale Conversion: Color channels are removed.
+3. Gaussian Blur: A blur is applied to reduce the synthetic noise.
+4. Thresholding: Otsu's method isolates the darker shape from the lighter background.
+5. Morphological Processing: Closing and opening operations fill small holes and remove artifacts.
+6. Contour Extraction: The largest external contour is selected.
+7. Feature Extraction: The code calculates area, perimeter, circularity, aspect ratio, extent, solidity, and 7 Hu Moments.
+8. KNN Prediction: The 13 features are compared against the training set using Euclidean distance (K=5).
 
 ## 10. Screenshots / Results
-**Evaluation Results:**
-- Accuracy: 61.11%
-- Precision (Triangles): 80.77%
-- Recall (Triangles): 67.74%
+The model achieved 60.00% accuracy on the test set. The confusion matrix shows that circles and squares were frequently confused with each other. This indicates that the current feature set and segmentation process still have room for improvement.
 
 The confusion matrix image is available in `outputs/confusion_matrix.png`.
 
 ## 11. Testing Approach
-Automated tests were written using pytest to verify each module independently. The `test_pipeline.py` checks preprocessing, segmentation, feature extraction, and classification modules using simulated dummy inputs to ensure the mathematical operations function without runtime errors.
+The code is tested using pytest. The tests use simulated dummy inputs (like an empty image with a single drawn circle) to verify that the preprocessing, segmentation, feature extraction, and classification modules execute mathematically without crashing.
 
 ## 12. Challenges Faced
-The primary challenge was setting up a stable environment for classical machine learning on a 32-bit Python 3.14 installation. Due to the lack of precompiled scikit-learn wheels, a custom K-Nearest Neighbors algorithm had to be implemented from scratch in pure NumPy. Additionally, tuning the morphological operations to correctly segment the shapes despite Gaussian noise required careful adjustment of kernel sizes.
+One issue was that the Gaussian noise sometimes caused the contour detector to find extra, incorrect boundaries in the background. Morphological operations were adjusted to reduce these extra detections, and a filter was added to select only the largest contour. Additionally, keeping the KNN features balanced was a challenge because the raw area feature is much larger than the Hu Moments.
 
 ## 13. Learnings & Key Takeaways
-I learned that classical CV techniques require careful tuning of parameters (like kernel size and threshold methods) to work effectively. I also learned that feature engineering (like calculating Hu Moments for rotation invariance) is critical when relying on simpler classifiers like KNN instead of deep learning feature extractors.
+One thing I learned from the project was that segmentation directly affects the final classifier result. If the contour is incorrect due to remaining noise, the extracted features like area and perimeter are also incorrect, causing the KNN to fail.
 
 ## 14. Future Enhancements
-Future improvements could include implementing feature normalization before KNN classification, which would likely increase accuracy. Additionally, implementing an SVM classifier or integrating more advanced contour filtering logic could improve the robustness to heavy noise.
+The most necessary enhancement is feature normalization. Because Euclidean distance is used, large numbers like contour area dominate the smaller Hu Moments. Standardizing the features before KNN prediction would likely improve the 60.00% accuracy significantly.
 
 ## 15. References
 1. OpenCV Documentation: https://docs.opencv.org/

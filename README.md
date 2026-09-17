@@ -1,112 +1,86 @@
 # Image Analysis and Object Classification Using Classical Computer Vision
 
-This project implements a complete Computer Vision pipeline to identify and classify geometric shapes (circles, squares, triangles) from noisy images. It uses classical computer vision techniques (filtering, thresholding, contour extraction) and a custom K-Nearest Neighbors (KNN) classifier.
+## Overview
+This project identifies geometric shapes (circles, squares, and triangles) from noisy images. It uses OpenCV to process the images and extract numerical features, and then classifies the shapes using a custom K-Nearest Neighbors (KNN) algorithm written in NumPy.
+
+The pipeline takes a color image, converts it to grayscale, applies a Gaussian blur to reduce noise, and segments the shape using Otsu's thresholding. The detected contour is measured to generate 13 specific features, which are then used by the KNN classifier to predict the shape.
 
 ## Features
-- **Synthetic Dataset Generation**: Creates varied, noisy images to test classical CV techniques robustly.
-- **Image Preprocessing**: Grayscale conversion and Gaussian blur.
-- **Image Segmentation**: Otsu thresholding and morphological closing/opening.
-- **Feature Extraction**: 13 geometric features (Circularity, Aspect Ratio, Solidity, Extent, and Hu Moments).
-- **Classification**: Pure NumPy KNN implementation.
-- **Evaluation**: Calculates accuracy, precision, recall, F1-score, and confusion matrix.
+- Generates a local dataset of noisy geometric shapes.
+- Preprocesses images using grayscale and Gaussian blur.
+- Segments shapes using Otsu's thresholding and morphological operations.
+- Extracts 13 features (area, perimeter, circularity, aspect ratio, extent, solidity, and 7 Hu Moments).
+- Classifies shapes using a custom K=5 K-Nearest Neighbors classifier.
+- Includes a terminal interface for training, testing, and single-image prediction.
 
 ## Technologies Used
 - Python 3
-- OpenCV (cv2)
+- OpenCV (`cv2`)
 - NumPy
-- Pytest (for testing)
-- Pillow (for diagram generation)
+- Pytest
+- Pillow
 
 ## Project Structure
-```
-.
-├── data/
-│   └── dataset/          # Generated images (train, val, test splits)
-├── docs/                 # Documentation and diagrams
-├── outputs/              # Trained models and evaluation results
-├── scripts/
-│   ├── prepare_data.py   # Dataset generator
-│   └── generate_diagrams.py # Diagram generator
-├── src/
-│   ├── classification.py # KNN classifier
-│   ├── evaluation.py     # Metrics calculation
-│   ├── feature_extraction.py # Shape descriptors
-│   ├── pipeline.py       # End-to-end integration
-│   ├── preprocessing.py  # Image filtering
-│   └── segmentation.py   # Thresholding and contours
-├── tests/                # Pytest unit tests
-├── main.py               # CLI entry point
-├── requirements.txt      # Python dependencies
-├── statement.md          # Problem statement
-└── README.md             # This file
-```
+- `data/dataset/`: Generated training, validation, and testing images.
+- `docs/`: Documentation and diagrams.
+- `outputs/`: Saved models, predictions, and evaluation results.
+- `scripts/`: Data generation and diagram scripts.
+- `src/`: Core Python modules (preprocessing, segmentation, feature extraction, classification, evaluation, pipeline).
+- `tests/`: Automated unit tests.
+- `main.py`: Command-line interface.
 
 ## Requirements
-Ensure you have Python installed. The project relies strictly on simple wheels that work across standard environments.
+The dependencies are listed in `requirements.txt`. Only basic, pre-compiled wheels are required.
 
 ## Installation
-1. Clone this repository or navigate to the directory.
-2. Create a virtual environment:
+1. Create a virtual environment:
    ```bash
    python -m venv .venv
    ```
-3. Activate the environment:
+2. Activate the environment:
    - Windows: `.venv\Scripts\activate`
    - Linux/Mac: `source .venv/bin/activate`
-4. Install dependencies:
+3. Install dependencies:
    ```bash
    pip install -r requirements.txt
    ```
 
 ## Dataset Setup
-Generate the synthetic dataset (600 images) using the data preparation script:
+Generate the 600 synthetic images locally:
 ```bash
 python scripts/prepare_data.py --num 600
 ```
-This creates a `data/dataset` folder with `train`, `val`, and `test` subdirectories.
+This splits the images into `train`, `val`, and `test` directories inside `data/dataset/`.
 
 ## How to Run
 
 **1. Train the Model**
-Train the KNN classifier on the generated training dataset:
 ```bash
 python main.py --train data/dataset/train
 ```
-The model will be saved to `outputs/model.pkl`.
+This trains the KNN classifier and saves it to `outputs/model.pkl`.
 
 **2. Evaluate the Model**
-Test the trained model on the unseen test dataset:
 ```bash
 python main.py --test data/dataset/test
 ```
-Evaluation metrics and a confusion matrix image will be saved to the `outputs/` directory.
+This evaluates the model on the test set and saves the confusion matrix and metrics to `outputs/`.
 
 **3. Predict a Single Image**
-Predict the shape of a single image and generate a visualization:
 ```bash
 python main.py --predict data/dataset/test/circle/circle_0000.jpg
 ```
-The result image with the prediction overlay will be saved to `outputs/`.
+This predicts the shape and saves a visualized image to `outputs/`.
 
-## How to Test
-Execute the test suite using `pytest`:
+## Testing
+Run the unit tests:
 ```bash
 python -m pytest tests/
 ```
 
-## Example Output
-```
-=== Evaluation Report ===
-Accuracy: 0.6111
-
-Class Metrics:
-- circle:
-  Precision: 0.6176
-  Recall: 0.6562
-  F1-Score: 0.6364
-...
-```
+## Results
+The model currently achieves 60.00% accuracy on the test set. Because the images include random rotation, scaling, and Gaussian noise, the classical thresholding sometimes struggles to isolate the contour perfectly, leading to confusion primarily between circles and squares.
 
 ## Limitations
-- The system relies on classical contour extraction, meaning heavily overlapping shapes or extreme noise might cause segmentation failures.
-- The KNN classifier is simple and uses Euclidean distance directly on features; normalizing the features could improve accuracy in future iterations.
+- The custom KNN uses raw Euclidean distance without feature normalization, which negatively impacts accuracy.
+- Heavy background noise can sometimes cause the contour detector to select the wrong region.
